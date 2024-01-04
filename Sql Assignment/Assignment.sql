@@ -530,20 +530,130 @@ FROM EMPLOYEE
 WHERE EMP_JOB_TITLE = "MANAGER";
 
 
--- *********************Database Name: AdventureWorks********************* 
+-- *********************Database Name: HR5********************* 
 
-/*1. Write a query to display employee numbers and employee name (first name, last name)
-of all the sales employees who received an amount of 2000 in bonus.*/
+/*1. Write a query to display the last name and hire date of any employee 
+in the same department as SALES.*/
 
-SELECT EMP_ID, EMP_FIRSTNAME, EMP_LASTNAME
+SELECT EMP_LASTNAME,EMP_HIREDATE FROM EMPLOYEE
+WHERE DEPARTMENT = "SALES";
+
+/*2. Create a query to display the employee numbers and last names of all 
+employees who earn more than the average salary. Sort the results in 
+ascending order of salary.*/
+
+SELECT AVG(EMP_SALARY) FROM EMPLOYEE;
+SELECT EMP_ID, EMP_LASTNAME,EMP_SALARY FROM EMPLOYEE
+WHERE EMP_SALARY > 8360.5000
+ORDER BY EMP_SALARY ASC;
+
+/*3. Write a query that displays the employee numbers and last names of 
+all employees who work in a department with any employee whose last name 
+contains a 'U'*/
+
+SELECT EMP_ID, EMP_LASTNAME,DEPARTMENT FROM EMPLOYEE
+WHERE EMP_LASTNAME LIKE "%U%";
+
+/*4. Display the last name, department number, and job ID of all employees 
+whose department location is ATLANTA.*/
+
+SELECT EMPLOYEE.EMP_LASTNAME,DEPARTMENT.DEPT_NO,EMPLOYEE.EMP_JOB_ID
 FROM EMPLOYEE
-WHERE EMP_JOB_TITLE = "SALES REPRESENTATIVE" AND EMP_COMMISSION_EARNED = 2000;
+INNER JOIN DEPARTMENT 
+ON EMPLOYEE.EMP_ID=EMP_ID_DEPT_INDEX
+WHERE EMP_CITY = "ATLANTA";
 
-/*2. Fetch address details of employees belonging to the state CA. If address is null, 
-provide default value N/A.*/
+/*7. Modify the above query to display the employee numbers, last names, 
+and salaries of all employees who earn more than the average salary and 
+who work in a department with any employee with a 'u'in their name.*/
 
-SELECT EMP_ID,EMP_FIRSTNAME, EMP_COUNTRY, IFNULL(EMP_ADDRESS,"N/A") FROM EMPLOYEE 
-WHERE EMP_COUNTRY ="USA";
- 
+SELECT AVG(EMP_SALARY) FROM EMPLOYEE;
+SELECT EMP_ID, EMP_LASTNAME,EMP_SALARY FROM EMPLOYEE
+WHERE EMP_SALARY > 8360.5000 AND EMP_LASTNAME LIKE "%U%"
+ORDER BY EMP_SALARY ASC;
+
+/*8. Display the names of all employees whose job title is the same as 
+anyone in the sales dept.*/
+
+SELECT EMP_FIRSTNAME , EMP_JOB_TITLE, DEPARTMENT FROM EMPLOYEE
+WHERE DEPARTMENT = "SALES";
+
+/*9. Write a compound query to produce a list of employees showing raise 
+percentages, employee IDs, and salaries. Employees in department 1 and 3 
+are given a 5% raise,employees in department 2 are given a 10% raise, 
+employees in departments 4 and 5 are given a 15% raise, and employees in 
+department 6 are not given a raise.*/
+
+SELECT EMPLOYEE.EMP_ID,EMPLOYEE.EMP_SALARY,DEPARTMENT.DEPT_NO,
+CASE
+    WHEN DEPARTMENT.DEPT_NO = 1 THEN 
+    EMPLOYEE.EMP_SALARY + (EMP_SALARY * 5/100)
+    WHEN DEPARTMENT.DEPT_NO = 3 THEN 
+    EMPLOYEE.EMP_SALARY + (EMP_SALARY * 5/100)
+    WHEN DEPARTMENT.DEPT_NO = 2 THEN 
+    EMPLOYEE.EMP_SALARY + (EMP_SALARY * 2/100)
+    WHEN DEPARTMENT.DEPT_NO = 4 THEN 
+    EMPLOYEE.EMP_SALARY + (EMP_SALARY * 15/100)
+    WHEN DEPARTMENT.DEPT_NO = 5 THEN 
+    EMPLOYEE.EMP_SALARY + (EMP_SALARY * 15/100)
+	ELSE EMPLOYEE.EMP_SALARY
+END AS "RAISE PERCENTAGE"
+FROM EMPLOYEE 
+INNER JOIN DEPARTMENT 
+ON EMPLOYEE.EMP_ID=EMP_ID_DEPT_INDEX
+ORDER BY DEPARTMENT.DEPT_NO ASC;
+
+/*10. Write a query to display the top three earners in the EMPLOYEES table. 
+Display their last names and salaries.*/
+
+SELECT EMP_LASTNAME, EMP_SALARY FROM EMPLOYEE
+ORDER BY EMP_SALARY DESC
+LIMIT 3;
+
+/*11. Display the names of all employees with their salary and commission 
+earned. Employees with a null commission should have O in the commission 
+column*/
+
+SELECT EMP_FIRSTNAME, EMP_SALARY,
+CASE
+    WHEN EMP_COMMISSION_EARNED IS NULL THEN "0"
+    ELSE EMP_COMMISSION_EARNED
+END AS COMMISSION_EARNED
+FROM EMPLOYEE;
+
+/*12. Display the Managers (name) with top three salaries along with their 
+salaries and department information.*/
+
+SELECT EMP_FIRSTNAME,EMP_JOB_TITLE,EMP_SALARY,DEPARTMENT FROM EMPLOYEE
+WHERE EMP_JOB_TITLE = "MANAGER"
+ORDER BY EMP_SALARY DESC
+LIMIT 3;
+
+
+-- ********************Database Name: Date Function********************* 
+
+/*2) Format the hire date as mm/dd/yyyy(09/22/2003) and DATE OF JOINING as 
+mon dd,yyyy(Aug 12th, 2004). Display the null as (DEC, 01th 1900)*/
+
+SELECT EMP_FIRSTNAME,
+CASE 
+	WHEN EMP_HIREDATE = "1900-12-01" THEN "NULL"
+    ELSE DATE_FORMAT(EMP_HIREDATE, "%m %d %Y")
+END AS "HIRE DATE",
+DATE_FORMAT(EMP_DOJ, "%M %D %Y") AS "DATE OF JOINING" FROM EMPLOYEE;
+
+/*3) Calcuate experience of the employee till date in Years and months
+(example 1 year and 3 months)*/
+
+SELECT EMP_FIRSTNAME,CONCAT(floor((DATEDIFF(current_date(),EMP_DOJ)/365)),
+" Year and ",floor((DATEDIFF(current_date(),EMP_DOJ)%365)/30)," Months") 
+AS "EMPLOYEE EXPERIENCE" FROM EMPLOYEE;
+
+-- 4) Display the count of days in the previous quarter
+
+SELECT DAY( MAKEDATE(YEAR(CURDATE()), 1) 
++ INTERVAL QUARTER(CURDATE()) QUARTER - INTERVAL 1 DAY )AS "NUMBER OF DAYS";
+
+
 
 
