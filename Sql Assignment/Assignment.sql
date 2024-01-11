@@ -280,7 +280,7 @@ CASE
 END AS COMMISSION
 FROM EMPLOYEE ;
 
--- *********************Database Name: HR3********************* 
+-- ***********************Database Name: HR3***************************
 
 /*1. Write a query that displays the employee's last names only from the 
 string's 2-5th position with the first letter capitalized and all other 
@@ -502,6 +502,15 @@ ID WHERE THE JOB TITLE IS  NOT A MANAGER*/
 SELECT EMP_LASTNAME,EMP_ID,EMP_JOB_TITLE,EMP_JOB_ID
 FROM EMPLOYEE 
 WHERE EMP_JOB_TITLE != "MANAGER";
+
+/*8. Create a query that displays employees last name,department number,and 
+all the employees who work in the same department as a given employee.*/
+
+SELECT EMPLOYEE.EMP_LASTNAME,DEPARTMENT.DEPT_NO,EMPLOYEE.DEPARTMENT
+FROM EMPLOYEE
+INNER JOIN DEPARTMENT 
+ON EMPLOYEE.EMP_ID=EMP_ID_DEPT_INDEX
+GROUP BY EMPLOYEE.DEPARTMENT,EMPLOYEE.EMP_LASTNAME,DEPARTMENT.DEPT_NO;
 
 /*9. Create a query that displays the name,job,department name,salary,grade for all
 employees. Derive grade based on salary(>=50000=A, >=30000=B,<30000=C)*/
